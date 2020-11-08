@@ -24,6 +24,16 @@ const routes: Routes = [
         ]
       },
       {
+        path: 'camera',
+        children: [
+          {
+            path: '',
+            loadChildren: () =>
+              import('../pages/camera/camera.module').then(m => m.CameraPageModule)
+          }
+        ]
+      },
+      {
         path: 'messages',
         children: [
           {

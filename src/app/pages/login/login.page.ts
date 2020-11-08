@@ -43,16 +43,14 @@ export class LoginPage implements OnInit {
         (res: any) => {
           if (res.userData) {
             // Storing the User data.
-            this.storageService
-              .store(AuthConstants.AUTH, res.userData)
-              .then(res => {
-                this.router.navigate(['home']);
-              });
+            this.storageService.store(AuthConstants.AUTH, res.userData).then(res => {this.router.navigate(['home']);
+          });
           } else {
             this.toastService.presentToast('Incorrect username and password.');
           }
         },
         (error: any) => {
+          console.log(error);
           this.toastService.presentToast('Network Issue.');
         }
       );
@@ -62,4 +60,5 @@ export class LoginPage implements OnInit {
       );
     }
   }
+  
 }

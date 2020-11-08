@@ -2,7 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { FeedService } from 'src/app/services/feed.service';
 import { AuthService } from './../../services/auth.service';
 import { ToastService } from './../../services/toast.service';
-import { ModalController } from '@ionic/angular';
+import { LoadingController, ModalController } from '@ionic/angular';
+import { Router } from '@angular/router';
+import { HttpService } from 'src/app/services/http.service';
+import { StorageService } from 'src/app/services/storage.service';
+import { DetailComponent } from 'src/app/components/detail/detail.component';
 
 @Component({
   selector: 'app-feed',
@@ -10,39 +14,82 @@ import { ModalController } from '@ionic/angular';
   styleUrls: ['./feed.page.scss']
 })
 export class FeedPage implements OnInit {
-  public authUser: any;
+ 
+  deliveries: any;
+  loading: any;
+  has_deliveries: boolean = false;
+  messenger_id : number;
 
-  postData = {
-    user_id: '',
-    token: ''
-  };
-  constructor(
-    private auth: AuthService,
-    private feedSerive: FeedService,
+  constructor(private router: Router,
+    private httpService: HttpService,
+    private storageService: StorageService,
     private toastService: ToastService,
-    private modalCtrl: ModalController,
-  ) {}
+    public modalCtrl: ModalController,
+    private loadingController: LoadingController,
+    private authService: AuthService) {
 
+  }
+  
   ngOnInit() {
-    this.auth.userData$.subscribe((res: any) => {
-      this.authUser = res;
-      this.feedData();
-    });
   }
 
-  feedData() {
-    console.log(this.authUser);
-    this.postData.user_id = this.authUser.user_id;
-    this.postData.token = this.authUser.token;
-    if (this.postData.user_id && this.postData.token) {
-      this.feedSerive.feedData(this.postData).subscribe(
-        (res: any) => {
-          this.feedSerive.changeFeedData(res.feedData);
-        },
-        (error: any) => {
-          this.toastService.presentToast('Network Issue.');
-        }
-      );
-    }
+  ionViewDidEnter(){
+    this.storageService.get('userData').then(
+      data => {
+        this.messenger_id = data.id
+    this.getDeliveries();
+      });
+      
   }
+
+  async openModal(subs_id){
+    try{
+      const modal = await this.modalCtrl.create({
+        component: DetailComponent,
+        componentProps: {
+          subscriber_id: subs_id
+        }
+      });
+      await modal.present();       
+
+    }catch(e){
+      console.log(e);
+    }
+
+  }
+
+  async getDeliveries(){
+    this.loading = await this.loadingController.create({
+      message: 'Loading data, please wait...',
+    });
+    
+    this.loading.present();
+    const url = 'bds/api/deliveries?query=by_messenger&messenger_id=' + this.messenger_id;
+    this.httpService.get(url).subscribe(
+      (res: any) => {
+        if (res.deliveries.length > 0){
+          this.deliveries = res.deliveries;
+          this.has_deliveries = true;
+          console.log("meron");
+          this.loading.dismiss();
+        }else{
+          this.has_deliveries = false;
+          this.loading.dismiss();
+        }
+      },
+      (error: any) => {
+        this.loading.dismiss();
+        this.toastService.presentToast('Network Issue.');
+      }
+    );
+  }
+
+  refresh(){
+    this.getDeliveries();
+  }
+
+  logoutAction() {
+    this.authService.logout();
+  }
+
 }

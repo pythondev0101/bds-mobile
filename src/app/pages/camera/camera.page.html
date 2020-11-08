@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Camera</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-img *ngIf="has_image; else no_image" [src]="photoService.images[0].webviewPath"></ion-img>
+ 
+  <ng-template #no_image>
+    <ion-row>
+      <ion-col text-center>
+        <ion-icon name="logo-dropbox"></ion-icon>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col text-center>
+        <ion-badge color="secondary">No image captured, click the camera icon to capture</ion-badge>
+      </ion-col>
+    </ion-row>
+  </ng-template>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-row>
+      <ion-col>
+        <ion-fab-button (click)="addImage()">
+          <ion-icon name="camera"></ion-icon>
+        </ion-fab-button>
+      </ion-col>
+      <ion-col>
+        <ion-fab-button *ngIf="has_image" (click)="confirmDeliver()">
+          <ion-icon name="send"></ion-icon>
+        </ion-fab-button>
+      </ion-col>
+    </ion-row>
+  </ion-fab>
+</ion-content>

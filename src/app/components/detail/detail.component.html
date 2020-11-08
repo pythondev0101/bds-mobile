@@ -1,0 +1,44 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title text-center>
+      Description
+    </ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="dismissModal()">
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+      <ion-item>
+        <ion-icon name="contact"></ion-icon>
+        <h2>{{data.fname}} {{data.lname}}</h2>
+      </ion-item>
+
+      <ion-item>
+        <ion-icon name="pin"></ion-icon>
+        {{data.address}}
+      </ion-item>
+
+      <ion-item>
+        <ion-icon name="mail"></ion-icon>
+        {{data.email}}
+      </ion-item>
+
+      <ion-item>
+        <ion-icon name="information-circle"></ion-icon>
+        <ion-badge *ngIf="data.status == 'DELIVERED'" color="success" item-end>{{data.status}}</ion-badge>
+        <ion-badge *ngIf="data.status == 'IN-PROGRESS'" color="danger" item-end>{{data.status}}</ion-badge>
+        <ion-badge *ngIf="data.status == 'PENDING'" color="warning" item-end>{{data.status}}</ion-badge>
+      </ion-item>
+  </ion-list>
+</ion-content>
+
+<ion-footer no-shadow>
+  <ion-button *ngIf="is_delivered == false" icon-start (click)="deliver(subscriber.id)">
+    <ion-icon name="camera"></ion-icon>
+    Camera
+  </ion-button>
+</ion-footer>

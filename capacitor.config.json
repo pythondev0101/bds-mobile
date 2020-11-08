@@ -1,7 +1,14 @@
 {
   "appId": "io.ionic.starter",
-  "appName": "new-ionic-angular",
+  "appName": "JNatividadBilling",
   "bundledWebRuntime": false,
   "npmClient": "npm",
-  "webDir": "www"
+  "webDir": "www",
+  "linuxAndroidStudioPath": "/snap/android-studio/94/android-studio/bin/studio.sh",
+  "server": {
+    "allowNavigation": []
+  },
+  "android": {
+    "allowMixedContent": true
+  }
 }

@@ -1,15 +1,52 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Feed</ion-title>
+    <ion-title text-center>Deliveries</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
 
-  <ion-item>
-    <h2> Welcome to {{ authUser?.name }}</h2>
-  </ion-item>
-  <app-feed-update [loginUser]="authUser"></app-feed-update>
-  <app-feed-card [loginUser]="authUser"></app-feed-card>
-  <ion-button (click)="showModal()" expand="block">Show modal</ion-button>
+  <ion-list *ngIf="has_deliveries; else no_content">
+    <ion-item button *ngFor="let del of deliveries" (click)="openModal(del.subscriber_id)">
+      <ion-label>
+        <h2>{{del.subscriber_fname}} {{del.subscriber_lname}}</h2>
+        <h3>{{del.subscriber_address}}</h3>
+      </ion-label>
+      <ion-badge *ngIf="del.status == 'DELIVERED'" color="success" item-end>{{del.status}}</ion-badge>
+      <ion-badge *ngIf="del.status == 'IN-PROGRESS'" color="danger" item-end>{{del.status}}</ion-badge>
+      <ion-badge *ngIf="del.status == 'PENDING'" color="warning" item-end>{{del.status}}</ion-badge>
+    </ion-item>
+  </ion-list>
+
+  <ng-template #no_content>
+    <ion-row>
+      <ion-col text-center>
+        <ion-icon name="logo-dropbox"></ion-icon>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col text-center>
+        <ion-badge color="secondary">No deliveries yet</ion-badge>
+      </ion-col>
+    </ion-row>
+  </ng-template>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-row>
+      <ion-col>
+        <ion-fab-button (click)="refresh()">
+          <ion-icon name="refresh"></ion-icon>
+        </ion-fab-button>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <ion-fab-button (click)="logoutAction()" color="danger">
+          <ion-icon name="log-out"></ion-icon>
+        </ion-fab-button>
+      </ion-col>
+    </ion-row>
+  </ion-fab>
+  
 </ion-content>
