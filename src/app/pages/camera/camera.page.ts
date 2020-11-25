@@ -1,6 +1,6 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Geolocation, Plugins } from '@capacitor/core';
+import { CallbackID, Plugins } from '@capacitor/core';
 import { LoadingController } from '@ionic/angular';
 import { HttpService } from 'src/app/services/http.service';
 import { PhotoService } from 'src/app/services/photo.service';
@@ -8,7 +8,7 @@ import { StorageService } from 'src/app/services/storage.service';
 import { ToastService } from 'src/app/services/toast.service';
 
 
-const { Camera } = Plugins;
+const { Camera, Geolocation } = Plugins;
 
 
 @Component({
@@ -18,9 +18,12 @@ const { Camera } = Plugins;
 })
 export class CameraPage implements OnInit {
   id: any;
+  messenger_id: any;
   loading: any;
+  can_send :boolean = false;
   has_image :boolean = false;
-  watchId: any;
+  watchCoordinate: any;
+  watchID: CallbackID;
 
   postData = {
     latitude: 0,
@@ -32,100 +35,83 @@ export class CameraPage implements OnInit {
   }
 
   constructor(public photoService: PhotoService,private router: Router,private httpService: HttpService,private storageService: StorageService,
-    private toastService: ToastService,private route: ActivatedRoute, private loadingController:LoadingController, private ngZone: NgZone) {
+    private toastService: ToastService,private route: ActivatedRoute, private loadingController:LoadingController, private zone: NgZone) {
 
       this.route.params.subscribe(params => {
         this.postData.subscriber_id = params['value'];
       });
+
+      this.watchPosition();
+
   }
+  
 
   ngOnInit(){
   }
 
-  async getLocationAndSend() {
+  ionViewDidEnter(){
 
-    // this.loading = await this.loadingController.create({
-    //   message: 'Delivering, please wait... (Check your location if enabled)',
-    // });
-    // this.loading.present();
+    this.storageService.get('userData').then(
+      data => {
+        this.messenger_id = data.id
+      });
+  }
+
+
+  watchPosition() {
+    try {
+      this.watchID = Plugins.Geolocation.watchPosition({enableHighAccuracy: true}, (position, err) => {
+        this.zone.run(() => {
+          this.watchCoordinate = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            accuracy: position.coords.accuracy
+          };
+          this.can_send = true;
+        });
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  clearWatch() {
+    if (this.watchID != null) {
+      Plugins.Geolocation.clearWatch({ id: this.watchID });
+    }
+  }
+
+  async getLocationAndSend() {
 
     this.toastService.presentToast('Delivering, please wait...');
 
-    const position = await Geolocation.getCurrentPosition({timeout: 10000}).then(
-      pos => {
+    this.postData.latitude = this.watchCoordinate.latitude;
+    this.postData.longitude = this.watchCoordinate.longitude;
+    this.postData.accuracy = this.watchCoordinate.accuracy;
 
-        this.storageService.get('userData').then(
-          data => {this.postData.messenger_id = data.id}
-        );
+    const date = new Date();
+    this.postData.date_mobile_delivery = date.toLocaleString();
 
-        this.postData.latitude = pos.coords.latitude;
-        this.postData.longitude = pos.coords.longitude;
-        this.postData.accuracy = pos.coords.accuracy;
+    console.log(this.postData);
 
-        const date = new Date();
-        this.postData.date_mobile_delivery = date.toLocaleString();
-
-        console.log(this.postData);
-
-        this.httpService.post('bds/api/confirm-deliver', this.postData).subscribe(
-            (res: any) => {
-              if (res.result) {
-                // this.loading.dismiss();
+    this.httpService.post('bds/api/confirm-deliver', this.postData).subscribe(
+      (res: any) => {
+        if (res.result) {
                 
-                let delivery_id: string = res.delivery.id;
+          let delivery_id: string = res.delivery.id;
                 
-                this.toastService.presentToast('Uploading image, please wait...');
+          this.toastService.presentToast('Uploading image, please wait...');
 
-                //Upload Image if successfully
-                for(let i=0; i < this.photoService.images.length; i++){
-                  this.photoService.upload(this.photoService.images[i].webviewPath, this.photoService.images[i].imageName, delivery_id);
-                }
-                this.router.navigate(['home']);
-              }
-            },
-            (error: any) => {
-              // this.loading.dismiss();
-              this.toastService.presentToast('Network Issue.');
-            }
-        );
-      }
-    );
-    
-    // try {
-    //   this.watchId = await Geolocation.watchPosition({ enableHighAccuracy: true}, (position, err) => {
-    //     this.ngZone.run(() => {
-    //       if (err) { console.log('err', err); return; }
-          
-    //       const date = new Date();
-        
-    //       this.postData.latitude = position.coords.latitude;
-    //       this.postData.longitude = position.coords.longitude;
-    //       this.postData.date_mobile_delivery = date.toLocaleString();
-    //       this.clearWatch();
-    //     })
-    //   })
-    // }
-    // catch (err) { console.log('err', err) }
-
-    // console.log(this.postData);
-    // this.httpService.post('bds/api/confirm-deliver', this.postData).subscribe(
-    //   (res: any) => {
-    //     if (res.result) {
-    //       // this.loading.dismiss();
-    //       let delivery_id: string = res.delivery.id;
-    //       //Upload Image if successfully
-    //       for(let i=0; i < this.photoService.images.length; i++){
-    //         this.photoService.upload(this.photoService.images[i].webviewPath, this.photoService.images[i].imageName, delivery_id);
-    //       }
-    //       this.router.navigate(['home']);
-    //     }
-    //     },
-    //         (error: any) => {
-    //           // this.loading.dismiss();
-    //           this.toastService.presentToast('Network Issue.');
-    //         }
-    //     );
-
+          //Upload Image if successfully
+          for(let i=0; i < this.photoService.images.length; i++){
+            this.photoService.upload(this.photoService.images[i].webviewPath, this.photoService.images[i].imageName, delivery_id);
+          }
+          this.router.navigate(['home']);
+        }
+      },
+      (error: any) => {
+        this.toastService.presentToast('Network Issue.');
+      });
   }
 
   confirmDeliver() {
@@ -139,12 +125,6 @@ export class CameraPage implements OnInit {
 
     this.photoService.addNewToGallery(img_name);
     this.has_image = true;
-  }
-
-  clearWatch() {
-    if (this.watchId != null) {
-      Geolocation.clearWatch({ id: this.watchId });
-    }
   }
 
 }

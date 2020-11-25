@@ -4,7 +4,7 @@
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",
-  "linuxAndroidStudioPath": "/snap/android-studio/94/android-studio/bin/studio.sh",
+  "linuxAndroidStudioPath": "/snap/android-studio/97/android-studio/bin/studio.sh",
   "server": {
     "allowNavigation": []
   },
