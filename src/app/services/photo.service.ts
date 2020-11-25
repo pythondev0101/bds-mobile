@@ -20,9 +20,10 @@ export class PhotoService {
 
   public async addNewToGallery(img_name: string) {
     const image = await Camera.getPhoto({
-      quality: 60,
+      quality: 40,
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
+      saveToGallery: false,
     }).then(img =>{
       const imageName = img_name;
 
@@ -38,11 +39,11 @@ export class PhotoService {
   }
 
   async upload(webPath: string, name: string , delivery_id: string): Promise<void> {
-    this.loading = await this.loadingController.create({
-      message: 'Uploading image, please wait...',
-    });
+    // this.loading = await this.loadingController.create({
+    //   message: 'Uploading image, please wait...',
+    // });
     
-    this.loading.present();
+    // this.loading.present();
 
     const url = environment.apiUrl + "bds/api/image-upload";
 
@@ -54,7 +55,7 @@ export class PhotoService {
 
     this.http.post<boolean>(url, formData).subscribe(
       ok => {
-        this.loading.dismiss();
+        // this.loading.dismiss();
         this.toastService.presentToast('Delivered Successfully!');
       });
   }

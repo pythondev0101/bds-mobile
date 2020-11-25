@@ -6,6 +6,8 @@
 
 <ion-content>
 
+  <ion-searchbar (ionInput)="filterSearch($event)"></ion-searchbar>
+
   <ion-list *ngIf="has_deliveries; else no_content">
     <ion-item button *ngFor="let del of deliveries" (click)="openModal(del.subscriber_id)">
       <ion-label>
