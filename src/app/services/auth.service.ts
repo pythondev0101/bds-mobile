@@ -10,6 +10,7 @@ import { StorageService } from './storage.service';
 })
 export class AuthService {
   userData$ = new BehaviorSubject<any>([]);
+  is_admin: boolean;
 
   constructor(
     private httpService: HttpService,

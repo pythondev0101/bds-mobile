@@ -1,0 +1,58 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title text-center>
+      Delivery Detail
+    </ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="dismissModal()">
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list>
+      <ion-item text-center>
+        <ion-icon name="contact"></ion-icon>
+        <ion-label class="label-size-30px">
+          {{data.fname}} {{data.lname}}
+        </ion-label>
+      </ion-item>
+
+      <ion-item text-center>
+        <ion-icon name="pin"></ion-icon>
+        {{data.address}}
+      </ion-item>
+
+      <ion-item text-center>
+        <ion-icon name="locate"></ion-icon>
+        <ion-label>
+        {{data.latitude}} | {{data.longitude}}
+        </ion-label>
+      </ion-item>
+
+      <ion-item text-center>
+        <ion-icon name="mail"></ion-icon>
+        <ion-label>
+          {{data.email}}
+        </ion-label>
+      </ion-item>
+  </ion-list>
+
+
+</ion-content>
+
+<ion-footer no-shadow>
+
+  <ion-card>
+    <ion-card-content>
+      Lat: {{ this.locationService?.watchCoordinate?.latitude }}
+      Long: {{ this.locationService?.watchCoordinate?.longitude }}
+      Acc: {{ this.locationService?.watchCoordinate?.accuracy }}
+    </ion-card-content>
+  </ion-card>
+
+  <ion-button expand="block" share="round" (click)="updateLocation()">Update location</ion-button>
+
+</ion-footer>

@@ -1,22 +1,22 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FeedUpdateComponent } from './feed-update.component';
+import { SubscriberUpdateComponent } from './subscriber-update.component';
 
-describe('FeedUpdateComponent', () => {
-  let component: FeedUpdateComponent;
-  let fixture: ComponentFixture<FeedUpdateComponent>;
+describe('SubscriberUpdateComponent', () => {
+  let component: SubscriberUpdateComponent;
+  let fixture: ComponentFixture<SubscriberUpdateComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FeedUpdateComponent ],
+      declarations: [ SubscriberUpdateComponent ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FeedUpdateComponent);
+    fixture = TestBed.createComponent(SubscriberUpdateComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

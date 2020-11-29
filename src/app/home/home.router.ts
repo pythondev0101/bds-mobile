@@ -24,40 +24,6 @@ const routes: Routes = [
         ]
       },
       {
-        path: 'camera',
-        children: [
-          {
-            path: '',
-            loadChildren: () =>
-              import('../pages/camera/camera.module').then(m => m.CameraPageModule)
-          }
-        ]
-      },
-      {
-        path: 'messages',
-        children: [
-          {
-            path: '',
-            loadChildren: () =>
-              import('../pages/messages/messages.module').then(
-                m => m.MessagesPageModule
-              )
-          }
-        ]
-      },
-      {
-        path: 'notifications',
-        children: [
-          {
-            path: '',
-            loadChildren: () =>
-              import('../pages/notifications/notifications.module').then(
-                m => m.NotificationsPageModule
-              )
-          }
-        ]
-      },
-      {
         path: 'settings',
         children: [
           {

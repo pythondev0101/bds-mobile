@@ -1,9 +1,43 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Settings</ion-title>
+    <ion-title text-center>Administration</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-button color='mango' (click)="logoutAction()">Log Out.</ion-button>
+
+  <ion-searchbar (ionInput)="filterSearch($event)"></ion-searchbar>
+
+  <ion-list *ngIf="has_subscribers; else no_content">
+    <ion-item button *ngFor="let subs of subscribers" (click)="openModal(subs.id)">
+      <ion-label>
+        <h2>{{subs.fname}} {{subs.lname}}</h2>
+        <h3>{{subs.address}}</h3>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ng-template #no_content>
+    <ion-row>
+      <ion-col text-center>
+        <ion-icon name="logo-dropbox"></ion-icon>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col text-center>
+        <ion-badge color="secondary">No subscribers, please contact system administrator.</ion-badge>
+      </ion-col>
+    </ion-row>
+  </ng-template>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-row>
+      <ion-col>
+        <ion-fab-button (click)="refresh()">
+          <ion-icon name="refresh"></ion-icon>
+        </ion-fab-button>
+      </ion-col>
+    </ion-row>
+  </ion-fab>
+  
 </ion-content>

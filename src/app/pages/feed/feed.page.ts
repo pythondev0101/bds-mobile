@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FeedService } from 'src/app/services/feed.service';
 import { AuthService } from './../../services/auth.service';
 import { ToastService } from './../../services/toast.service';
 import { LoadingController, ModalController } from '@ionic/angular';
@@ -7,6 +6,7 @@ import { Router } from '@angular/router';
 import { HttpService } from 'src/app/services/http.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { DetailComponent } from 'src/app/components/detail/detail.component';
+import { LocationService } from 'src/app/services/location.service';
 
 
 @Component({
@@ -28,7 +28,8 @@ export class FeedPage implements OnInit {
     private toastService: ToastService,
     public modalCtrl: ModalController,
     private loadingController: LoadingController,
-    private authService: AuthService) {
+    private authService: AuthService,
+    private locationService: LocationService) {
 
   }
   
@@ -39,9 +40,8 @@ export class FeedPage implements OnInit {
     this.storageService.get('userData').then(
       data => {
         this.messenger_id = data.id
-    this.getDeliveries();
+    // this.getDeliveries();
       });
-      
   }
 
   async openModal(subs_id){
@@ -55,7 +55,7 @@ export class FeedPage implements OnInit {
       await modal.present();       
 
     }catch(e){
-      console.log(e);
+      this.toastService.presentToast("Error occured!");
     }
 
   }

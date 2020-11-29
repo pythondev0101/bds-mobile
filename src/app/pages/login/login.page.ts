@@ -42,9 +42,12 @@ export class LoginPage implements OnInit {
       this.authService.login(this.postData).subscribe(
         (res: any) => {
           if (res.userData) {
+            this.authService.is_admin = res.userData.is_admin;
+
             // Storing the User data.
-            this.storageService.store(AuthConstants.AUTH, res.userData).then(res => {this.router.navigate(['home']);
-          });
+            this.storageService.store(AuthConstants.AUTH, res.userData).then(r => {
+              this.router.navigate(['home']);
+            });
           } else {
             this.toastService.presentToast('Incorrect username and password.');
           }
