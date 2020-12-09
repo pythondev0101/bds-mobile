@@ -1,12 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from './../../services/auth.service';
 import { ToastService } from './../../services/toast.service';
-import { LoadingController, ModalController } from '@ionic/angular';
-import { Router } from '@angular/router';
-import { HttpService } from 'src/app/services/http.service';
+import { ModalController } from '@ionic/angular';
 import { StorageService } from 'src/app/services/storage.service';
 import { DetailComponent } from 'src/app/components/detail/detail.component';
-import { LocationService } from 'src/app/services/location.service';
+import { FeedService } from 'src/app/services/feed.service';
 
 
 @Component({
@@ -16,21 +14,11 @@ import { LocationService } from 'src/app/services/location.service';
 })
 export class FeedPage implements OnInit {
  
-  deliveries: any;
-  deliveriesBackup: any;
-  loading: any;
-  has_deliveries: boolean = false;
-  messenger_id : number;
-
-  constructor(private router: Router,
-    private httpService: HttpService,
+  constructor(public feedService: FeedService,
     private storageService: StorageService,
     private toastService: ToastService,
     public modalCtrl: ModalController,
-    private loadingController: LoadingController,
-    private authService: AuthService,
-    private locationService: LocationService) {
-
+    private authService: AuthService,) {
   }
   
   ngOnInit() {
@@ -39,8 +27,7 @@ export class FeedPage implements OnInit {
   ionViewDidEnter(){
     this.storageService.get('userData').then(
       data => {
-        this.messenger_id = data.id
-    // this.getDeliveries();
+        this.feedService.messenger_id = data.id
       });
   }
 
@@ -60,49 +47,26 @@ export class FeedPage implements OnInit {
 
   }
 
-  async getDeliveries(){
-    this.loading = await this.loadingController.create({
-      message: 'Loading data, please wait...',
-    });
-    
-    this.loading.present();
-    const url = 'bds/api/deliveries?query=by_messenger&messenger_id=' + this.messenger_id;
-    this.httpService.get(url).subscribe(
-      (res: any) => {
-        if (res.deliveries.length > 0){
-          this.deliveries = res.deliveries;
-          this.deliveriesBackup = res.deliveries;
-          this.has_deliveries = true;
-          this.loading.dismiss();
-        }else{
-          this.has_deliveries = false;
-          this.loading.dismiss();
-        }
-      },
-      (error: any) => {
-        this.loading.dismiss();
-        this.toastService.presentToast('Network Issue.');
-      }
-    );
-  }
-
   async filterSearch(evt){
-    this.deliveries = this.deliveriesBackup;
+    this.feedService.deliveries = this.feedService.deliveriesBackup;
     const search_value = evt.srcElement.value;
 
     if (search_value == ""){
       return;
     }
-    console.log(search_value);
 
-    this.deliveries = this.deliveries.filter(delivery => {
+    this.feedService.deliveries = this.feedService.deliveries.filter(delivery => {
 
-        return (delivery.subscriber_fname.toLowerCase().indexOf(search_value.toLowerCase()) > -1);
+        return (delivery.subscriber_lname.toLowerCase().indexOf(search_value.toLowerCase()) > -1);
     });
   }
 
   refresh(){
-    this.getDeliveries();
+    this.feedService.getDeliveries();
+  }
+
+  test(){
+    this.feedService.updateDelivery();
   }
 
   logoutAction() {

@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { LoadingController, ModalController } from '@ionic/angular';
 import { HttpService } from 'src/app/services/http.service';
 import { LocationService } from 'src/app/services/location.service';
