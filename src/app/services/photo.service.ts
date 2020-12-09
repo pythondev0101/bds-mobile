@@ -13,7 +13,7 @@ const { Camera } = Plugins;
   providedIn: 'root'
 })
 export class PhotoService {
-  public images: Image[] = [];
+  public image: Image;
   loading: any;
 
   constructor(private http: HttpClient, private toastService: ToastService, private loadingController: LoadingController) { }
@@ -27,44 +27,31 @@ export class PhotoService {
     }).then(img =>{
       const imageName = img_name;
 
-      // Remove existing image in array
-      this.images = [];
-
-      this.images.unshift({
+      this.image= {
         imageName: imageName,
         webviewPath: img.webPath,
         imageFormat: img.format,
-      });
+      }
     });
   }
 
-  async upload(webPath: string, name: string , delivery_id: string): Promise<void> {
-    // this.loading = await this.loadingController.create({
-    //   message: 'Uploading image, please wait...',
-    // });
-    
-    // this.loading.present();
+  async upload(webPath: string, name: string , data: any) {
 
-    const url = environment.apiUrl + "bds/api/image-upload";
+    const url = environment.apiUrl + "bds/api/confirm-deliver";
 
     const blob = await fetch(webPath).then(r => r.blob());
 
     const formData = new FormData();
     formData.append('file', blob, name);
-    formData.append('delivery_id', delivery_id);
+    formData.append('data', JSON.stringify(data));
 
-    this.http.post<boolean>(url, formData).subscribe(
-      ok => {
-        // this.loading.dismiss();
-        this.toastService.presentToast('Delivered Successfully!');
-      });
+    return this.http.post(url, formData);
   }
 }
 
 
 export interface Image {
   imageName: string;
-  // blobData: any;
   imageFormat: any;
   webviewPath: string;
 }

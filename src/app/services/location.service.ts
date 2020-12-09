@@ -19,11 +19,14 @@ export class LocationService {
     try {
       this.watchID = Plugins.Geolocation.watchPosition({enableHighAccuracy: true}, (position, err) => {
         this.zone.run(() => {
-          this.watchCoordinate = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            accuracy: position.coords.accuracy
-          };
+          console.log(position);
+          if(!(position == null)){
+            this.watchCoordinate = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              accuracy: position.coords.accuracy
+            };
+          }
         });
       });
     } catch (e) {

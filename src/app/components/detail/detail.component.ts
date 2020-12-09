@@ -5,6 +5,7 @@ import { HttpService } from 'src/app/services/http.service';
 import { LocationService } from 'src/app/services/location.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { PhotoService } from 'src/app/services/photo.service';
+import { isUndefined } from 'util';
 
 
 @Component({
@@ -87,37 +88,41 @@ export class DetailComponent implements OnInit {
 
   }
 
-  deliver(){
+  async deliver(){
 
     this.toastService.presentToast('Delivering, please wait...');
 
-    const date = new Date();
-    this.postData.date_mobile_delivery = date.toLocaleString();
-
-    this.postData.latitude = this.locationService.watchCoordinate.latitude;
-    this.postData.longitude = this.locationService.watchCoordinate.longitude;
-    this.postData.accuracy = this.locationService.watchCoordinate.accuracy;
-
-    this.httpService.post('bds/api/confirm-deliver', this.postData).subscribe(
-      (res: any) => {
-        if (res.result) {
-                
-          let delivery_id: string = res.delivery.id;
-                
-          this.toastService.presentToast('Uploading image, please wait...');
-
-          //Upload Image if successfully
-          for(let i=0; i < this.photoService.images.length; i++){
-            this.photoService.upload(this.photoService.images[i].webviewPath, this.photoService.images[i].imageName, delivery_id);
-          }
-
-          this.modalCtrl.dismiss();
-        }
-      },
-      (error: any) => {
-        this.toastService.presentToast('Network Issue.');
-      });
+    try {
+      const date = new Date();
+      this.postData.date_mobile_delivery = date.toLocaleString();
       
+      if(!(isUndefined(this.locationService.watchCoordinate))){
+        this.postData.latitude = this.locationService.watchCoordinate.latitude;
+        this.postData.longitude = this.locationService.watchCoordinate.longitude;
+        this.postData.accuracy = this.locationService.watchCoordinate.accuracy;
+      }else{
+        this.postData.latitude = null;
+        this.postData.longitude = null;
+        this.postData.accuracy = null;
+      }
+      
+      const upload = (await this.photoService.upload(this.photoService.image.webviewPath,this.photoService.image.imageName,this.postData)).subscribe(
+        (res: any) => {
+          if(res.result){
+            this.toastService.presentToast('Delivered Successfully!');
+          }
+        },
+        (error:any) => {
+          this.toastService.presentToast('Network Issue, please contact system administrator')
+        }
+      );
+      
+      this.modalCtrl.dismiss();
+
+    } catch (error) {
+      this.toastService.presentToast("System error occured!");      
+    }
+
   }
 
   async addImage() {

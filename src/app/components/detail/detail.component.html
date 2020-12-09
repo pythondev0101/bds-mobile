@@ -39,7 +39,7 @@
       </ion-item>
   </ion-list>
 
-  <ion-img *ngIf="has_image; else no_image" [src]="photoService.images[0].webviewPath"></ion-img>
+  <ion-img *ngIf="has_image; else no_image" [src]="photoService.image.webviewPath"></ion-img>
  
   <ng-template #no_image>
     <ion-row *ngIf="is_delivered == false">
