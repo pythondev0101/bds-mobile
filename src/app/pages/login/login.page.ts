@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { FeedService } from 'src/app/services/feed.service';
 import { AuthConstants } from '../../config/auth-constants';
 import { AuthService } from './../../services/auth.service';
 import { StorageService } from './../../services/storage.service';
@@ -42,11 +43,11 @@ export class LoginPage implements OnInit {
       this.authService.login(this.postData).subscribe(
         (res: any) => {
           if (res.userData) {
-            this.authService.is_admin = res.userData.is_admin;
 
             // Storing the User data.
             this.storageService.store(AuthConstants.AUTH, res.userData).then(r => {
-              this.router.navigate(['home']);
+            this.router.navigate(['home']);
+            window.location.reload();
             });
           } else {
             this.toastService.presentToast('Incorrect username and password.');

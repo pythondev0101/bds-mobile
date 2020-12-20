@@ -24,19 +24,21 @@ export class FeedPage implements OnInit {
   ngOnInit() {
   }
 
-  ionViewDidEnter(){
+  ionViewWillEnter(){
     this.storageService.get('userData').then(
       data => {
         this.feedService.messenger_id = data.id
+        console.log(data);
       });
   }
 
-  async openModal(subs_id){
+  async openModal(delivery){
     try{
       const modal = await this.modalCtrl.create({
         component: DetailComponent,
         componentProps: {
-          subscriber_id: subs_id
+          delivery: delivery,
+          subscriber_id: delivery.subscriber_id
         }
       });
       await modal.present();       
@@ -63,10 +65,6 @@ export class FeedPage implements OnInit {
 
   refresh(){
     this.feedService.getDeliveries();
-  }
-
-  test(){
-    this.feedService.updateDelivery();
   }
 
   logoutAction() {

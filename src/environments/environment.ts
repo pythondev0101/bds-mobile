@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://192.168.254.108:5000/'
+  apiUrl: 'http://192.168.254.112:5000/'
+  // apiUrl: 'http://jnatividadbilling.pythonanywhere.com/'
 };
 
 /*

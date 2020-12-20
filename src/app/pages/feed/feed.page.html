@@ -9,7 +9,7 @@
   <ion-searchbar (ionInput)="filterSearch($event)"></ion-searchbar>
 
   <ion-list *ngIf="this.feedService.has_deliveries; else no_content">
-    <ion-item button *ngFor="let del of this.feedService.deliveries" (click)="openModal(del.subscriber_id)">
+    <ion-item button *ngFor="let del of this.feedService.deliveries" (click)="openModal(del)">
       <ion-label>
         <h2>{{del.subscriber_fname}} {{del.subscriber_lname}}</h2>
         <h3>{{del.subscriber_address}}</h3>
@@ -17,6 +17,7 @@
       <ion-badge *ngIf="del.status == 'DELIVERED'" color="success" item-end>{{del.status}}</ion-badge>
       <ion-badge *ngIf="del.status == 'IN-PROGRESS'" color="danger" item-end>{{del.status}}</ion-badge>
       <ion-badge *ngIf="del.status == 'PENDING'" color="warning" item-end>{{del.status}}</ion-badge>
+      <ion-badge *ngIf="del.status == 'DELIVERING'" color="primary" item-end>{{del.status}}</ion-badge>
     </ion-item>
   </ion-list>
 
@@ -54,13 +55,6 @@
       </ion-col>
     </ion-row>
 
-    <ion-row>
-      <ion-col>
-        <ion-fab-button (click)="test()" color="danger">
-          <ion-icon name="home"></ion-icon>
-        </ion-fab-button>
-      </ion-col>
-    </ion-row>
   </ion-fab>
   
 </ion-content>

@@ -43,7 +43,11 @@ export class FeedService {
     );
   }
 
-  updateDelivery(){
-    console.log(this.deliveries);
+  sendDelivery(delivery_id){
+    this.deliveries.find(item => item.id == delivery_id).status = "DELIVERING";
+  }
+
+  updateDelivery(delivery_id: number, status: string){
+    this.deliveries.find(item => item.id == delivery_id).status = status;
   }
 }
