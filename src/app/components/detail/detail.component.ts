@@ -61,32 +61,15 @@ export class DetailComponent implements OnInit {
     
     this.loading.present();
 
-    const url = "bds/api/subscribers/" + this.subscriber_id;
+    this.data.fname = this.delivery.subscriber_fname;
+    this.data.lname = this.delivery.subscriber_lname;
+    this.data.address = this.delivery.subscriber_address;
+    this.data.email = this.delivery.subscriber_email;
+    this.data.status = this.delivery.status;
 
-    this.httpService.get(url).subscribe(
-      (res: any) => {
-        if (res){
-          this.subscriber = res;
-          this.data.fname = this.subscriber.fname;
-          this.data.lname = this.subscriber.lname
-          this.data.address = this.subscriber.address;
-          this.data.email = this.subscriber.email
-          this.data.status = this.subscriber.status;
-
-          this.postData.subscriber_id = this.subscriber_id;
-
-          if (this.data.status == "DELIVERED" || this.data.status == "PENDING"){
-            this.is_delivered = true;
-          }
-          this.loading.dismiss();
-        }
-      },
-      (error: any) => {
-        this.loading.dismiss();
-        this.toastService.presentToast('Network Issue.');
-      }
-    );
-
+    this.postData.subscriber_id = this.delivery.subscriber_id;
+    
+    this.loading.dismiss();
   }
 
   async deliver(){
@@ -133,8 +116,8 @@ export class DetailComponent implements OnInit {
 
   async addImage() {
     const date = new Date();
-    const subscriber = "subs_" + this.postData.subscriber_id;
-    const img_name: string = date.toDateString() + "_" + date.toLocaleTimeString() + "_" + subscriber + ".jpg";
+    const _subscriber = "subs_" + this.postData.subscriber_id;
+    const img_name: string = date.toDateString() + "_" + date.toLocaleTimeString() + "_" + _subscriber + ".jpg";
 
     this.photoService.addNewToGallery(img_name);
     this.has_image = true;
