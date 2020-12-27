@@ -39,6 +39,7 @@ export class FeedService {
       (error: any) => {
         this.loading.dismiss();
         this.toastService.presentToast('Network Issue.');
+        console.log(error);
       }
     );
   }

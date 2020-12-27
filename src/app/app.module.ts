@@ -8,6 +8,8 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CacheModule } from 'ionic-cache';
+import { IonicStorageModule } from '@ionic/storage';
+import { Network } from '@ionic-native/network/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -17,13 +19,15 @@ import { CacheModule } from 'ionic-cache';
     IonicModule.forRoot(),
     AppRoutingModule,
     HttpClientModule,
-    CacheModule.forRoot()
+    CacheModule.forRoot(),
+    IonicStorageModule.forRoot()
   ],
   providers: [
     StatusBar,
     SplashScreen,
     HttpClientModule,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    Network
   ],
   bootstrap: [AppComponent]
 })

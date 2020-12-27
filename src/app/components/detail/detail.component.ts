@@ -6,6 +6,7 @@ import { ToastService } from 'src/app/services/toast.service';
 import { PhotoService } from 'src/app/services/photo.service';
 import { isUndefined } from 'util';
 import { FeedService } from 'src/app/services/feed.service';
+import { ApiService } from 'src/app/services/api.service';
 
 
 @Component({
@@ -37,13 +38,15 @@ export class DetailComponent implements OnInit {
     accuracy: 0,
     messenger_id: 0,
     subscriber_id: 0,
-    date_mobile_delivery:  ""
+    date_mobile_delivery:  "",
+    delivery_id: 0
   }
 
   
   constructor(private photoService: PhotoService, private modalCtrl: ModalController, private toastService: ToastService, private httpService: HttpService,
     private loadingController: LoadingController, public locationService: LocationService,
-    private feedService: FeedService) {
+    private feedService: FeedService,
+    private apiService: ApiService) {
 
   }
 
@@ -80,6 +83,7 @@ export class DetailComponent implements OnInit {
       const date = new Date();
       this.postData.date_mobile_delivery = date.toLocaleString();
       this.postData.messenger_id = this.feedService.messenger_id;
+      this.postData.delivery_id = this.delivery.id;
 
       if(!(isUndefined(this.locationService.watchCoordinate))){
         this.postData.latitude = this.locationService.watchCoordinate.latitude;
@@ -91,18 +95,31 @@ export class DetailComponent implements OnInit {
         this.postData.accuracy = null;
       }
       
-      const upload = (await this.photoService.upload(this.photoService.image.webviewPath,this.photoService.image.imageName,this.postData)).subscribe(
-        (res: any) => {
-          if(res.result){
-            this.feedService.updateDelivery(this.delivery.id, res.delivery.status);
-            this.toastService.presentToast('Delivered Successfully!');
-          }
-        },
-        (error:any) => {
-          this.feedService.updateDelivery(this.delivery.id, "IN-PROGRESS");
-          this.toastService.presentToast('Network Issue, please contact system administrator')
-        }
-      );
+      // const upload = (await this.photoService.upload(this.photoService.image.webviewPath,this.photoService.image.imageName,this.postData)).subscribe(
+      //   (res: any) => {
+      //     if(res.result){
+      //       this.feedService.updateDelivery(this.delivery.id, res.delivery.status);
+      //       this.toastService.presentToast('Delivered Successfully!');
+      //     }
+      //   },
+      //   (error:any) => {
+      //     this.feedService.updateDelivery(this.delivery.id, "IN-PROGRESS");
+      //     this.toastService.presentToast('Network Issue, please contact system administrator')
+      //   }
+      // );
+
+      const upload = (await this.apiService.uploadAndDeliver(
+        this.photoService.image.webviewPath, this.photoService.image.imageName, this.postData)).subscribe(
+          (res: any) => {
+                if(res.result){
+                  this.feedService.updateDelivery(this.delivery.id, res.delivery.status);
+                  this.toastService.presentToast('Delivered successfully!');
+                }
+              },
+              (error:any) => {
+                this.toastService.presentToast('No network connection, delivering...');
+              }
+        );
       
       this.feedService.sendDelivery(this.delivery.id);
       this.modalCtrl.dismiss();

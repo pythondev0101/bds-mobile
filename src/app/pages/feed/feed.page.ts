@@ -5,6 +5,8 @@ import { ModalController } from '@ionic/angular';
 import { StorageService } from 'src/app/services/storage.service';
 import { DetailComponent } from 'src/app/components/detail/detail.component';
 import { FeedService } from 'src/app/services/feed.service';
+import { NetworkService, ConnectionStatus } from 'src/app/services/network.service';
+import { OfflineManagerService } from 'src/app/services/offline-manager.service';
 
 
 @Component({
@@ -18,7 +20,9 @@ export class FeedPage implements OnInit {
     private storageService: StorageService,
     private toastService: ToastService,
     public modalCtrl: ModalController,
-    private authService: AuthService,) {
+    private authService: AuthService,
+    private networkService: NetworkService,
+    private offlineManager: OfflineManagerService) {
   }
   
   ngOnInit() {
@@ -65,6 +69,14 @@ export class FeedPage implements OnInit {
 
   refresh(){
     this.feedService.getDeliveries();
+  }
+
+  resend(){
+    this.networkService.onNetworkChange().subscribe((status: ConnectionStatus) => {
+        if (status == ConnectionStatus.Online) {
+          this.offlineManager.checkForEvents().subscribe();
+        }
+    });
   }
 
   logoutAction() {

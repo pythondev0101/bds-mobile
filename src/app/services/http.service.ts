@@ -25,13 +25,4 @@ export class HttpService {
     return this.http.get(url, this.options);
   }
 
-  uploadImage(blobData, name, ext) {
-    const url = environment.apiUrl + "image-upload";
-
-    const formData = new FormData();
-    formData.append('file', blobData, `myimage.${ext}`);
-    formData.append('name', name);
-    
-    return this.http.post(url, formData);
-  }
 }
