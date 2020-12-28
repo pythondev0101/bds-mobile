@@ -48,7 +48,7 @@ export class NetworkService {
 
   }
 
-  private async updateNetworkStatus(status: ConnectionStatus) {
+  public async updateNetworkStatus(status: ConnectionStatus) {
     this.status.next(status);
  
     let connection = status == ConnectionStatus.Offline ? 'Offline' : 'Online';

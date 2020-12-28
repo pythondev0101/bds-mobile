@@ -6,6 +6,7 @@ import { StorageService } from 'src/app/services/storage.service';
 import { DetailComponent } from 'src/app/components/detail/detail.component';
 import { FeedService } from 'src/app/services/feed.service';
 import { NetworkListenerService } from 'src/app/services/network-listener.service';
+import { AlertController } from '@ionic/angular';
 
 
 @Component({
@@ -20,7 +21,8 @@ export class FeedPage implements OnInit {
     private toastService: ToastService,
     public modalCtrl: ModalController,
     private authService: AuthService,
-    private networkListenerService: NetworkListenerService) {
+    private networkListenerService: NetworkListenerService,
+    public alertController: AlertController) {
 
   }
   
@@ -93,8 +95,29 @@ export class FeedPage implements OnInit {
   //   this.networkListenerService.networkListener.remove();
   // }
 
-  logoutAction() {
-    this.authService.logout();
+  async logoutAction() {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: 'Confirm!',
+      message: 'Are you sure you want to <strong>log out?</strong>!!!',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            console.log('Logout cancelled');
+          }
+        }, {
+          text: 'Confirm',
+          handler: () => {
+                this.authService.logout();
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
 }

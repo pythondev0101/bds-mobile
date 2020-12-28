@@ -42,26 +42,32 @@ export class AppComponent {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
 
+      this.networkService.initializeNetworkEvents();
+
       this.networkListenerService.networkListener = Network.addListener('networkStatusChange', (status) => {
         console.log("Network status changed", status);
   
         if (status.connected == false){
-        this.toastService.presentToast("Network disconnected!");
-        this.changeRef.detectChanges(); 
+        // this.toastService.presentToast("Network disconnected!");
+        this.changeRef.detectChanges();
+
+        this.networkService.updateNetworkStatus(ConnectionStatus.Offline);
   
         } else {
-          this.toastService.presentToast("Network connected!");
+          // this.toastService.presentToast("Network connected!");
+
+          this.networkService.updateNetworkStatus(ConnectionStatus.Online);
+
           this.networkService.onNetworkChange().subscribe((status: ConnectionStatus) => {
             if (status == ConnectionStatus.Online) {
-              this.offlineManager.checkForEvents().subscribe(() =>{
+              this.offlineManager.checkForEvents().subscribe();
+              
+              setTimeout(() =>{
+                this.changeRef.detectChanges();
+              },5000);
 
-                setTimeout(() =>{
-                  this.changeRef.detectChanges();
-                },5000);
-
-              });
             }
-        });
+          });
         }
 
         this.networkListenerService.networkStatus = status;
@@ -75,7 +81,6 @@ export class AppComponent {
       //   }
       // });
 
-      // this.networkService.initializeNetworkEvents();
 
       // // Offline event
       // this.events.subscribe('network:offline', () => {
