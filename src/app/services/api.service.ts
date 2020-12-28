@@ -6,7 +6,6 @@ import { Storage } from '@ionic/storage';
 import { Observable, from } from 'rxjs';
 import { tap, map, catchError } from "rxjs/operators";
 import { environment } from 'src/environments/environment';
-import { FeedService } from './feed.service';
 
 const API_STORAGE_KEY = 'specialkey';
 const API_URL = 'https://reqres.in/api';
@@ -16,8 +15,7 @@ const API_URL = 'https://reqres.in/api';
 })
 export class ApiService {
 
-  constructor(private http: HttpClient, private networkService: NetworkService, private storage: Storage, private offlineManager: OfflineManagerService,
-    private feedService: FeedService) { }
+  constructor(private http: HttpClient, private networkService: NetworkService, private storage: Storage, private offlineManager: OfflineManagerService) { }
 
   getUsers(forceRefresh: boolean = false): Observable<any[]> {
     if (this.networkService.getCurrentNetworkStatus() == ConnectionStatus.Offline || !forceRefresh) {
@@ -69,12 +67,10 @@ export class ApiService {
     console.log('test',JSON.stringify(storedData));
 
     if (this.networkService.getCurrentNetworkStatus() == ConnectionStatus.Offline) {
-      this.feedService.updateDelivery(data.id, "DELIVERING");
       return from(this.offlineManager.storeRequest(url, 'POST', storedData));
     } else {
       return this.http.post(url, formData).pipe(
         catchError(err => {
-          this.feedService.updateDelivery(data.id, "DELIVERING");
           this.offlineManager.storeRequest(url, 'POST', storedData);
           throw new Error(err);
         })

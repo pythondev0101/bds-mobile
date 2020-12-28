@@ -28,25 +28,31 @@ export class OfflineManagerService {
 
   
   checkForEvents(): Observable<any> {
-    // if (this.networkService.getCurrentNetworkStatus() == ConnectionStatus.Offline) {
-    //   this.toastService.presentToast("No network connection, connect to the internet and try again.");
-    //   return of(false);
-    // }
     return from(this.storage.get(STORAGE_REQ_KEY)).pipe(
       switchMap(storedOperations => {
         let storedObj = JSON.parse(storedOperations);
-        if (storedObj && storedObj.length > 0) {
-          return this.sendRequests(storedObj).pipe(
-            finalize(() => {
-              this.toastService.presentToast(`Pending operations successfully delivered!`);
- 
-              this.storage.remove(STORAGE_REQ_KEY);
-            })
-          );
-        } else {
-          this.toastService.presentToast(`No pending operations`);
+
+        if (this.networkService.getCurrentNetworkStatus() == ConnectionStatus.Offline) {
+          this.toastService.presentToast("No network connection, connect to the internet and try again.");
           return of(false);
+          
+        } else{
+
+          if (storedObj && storedObj.length > 0) {
+            return this.sendRequests(storedObj).pipe(
+              finalize(() => {
+                this.toastService.presentToast(`Pending operations successfully delivered!`);
+   
+                this.storage.remove(STORAGE_REQ_KEY);
+              })
+            );
+          } else {
+            console.log("No pending operations");
+            // this.toastService.presentToast(`No pending operations`);
+            return of(false);
+          }
         }
+
       })
     )
   }
@@ -54,7 +60,7 @@ export class OfflineManagerService {
 
   storeRequest(url, type, data) {
  
-    this.toastService.presentToast(`Your data is stored locally because you seem to be offline.`);
+    // this.toastService.presentToast(`Your data is stored locally because you seem to be offline.`);
  
     let action: StoredRequest = {
       url: url,
@@ -88,18 +94,26 @@ export class OfflineManagerService {
 
       const formData = new FormData();
      // const blob = await fetch(op.data.webPath).then(r => r.blob());
+     let testResult: any;
+
       fetch(op.data.webPath).then(r => r.blob().then(
         blob => {
           formData.append('file', blob, op.data.name)
           formData.append('data', JSON.stringify(op.data.data));
           let oneObs = this.http.request(op.type ,op.url, {body: formData}).subscribe(
             (res:any)=>{
-              this.feedService.updateDelivery(op.data.data.delivery_id, res.delivery.status);
+              testResult = res;
+              console.log("DELIVERED:", res.delivery.id, res.delivery.status);
+              this.feedService.updateDelivery(res.delivery.id, res.delivery.status);
             },
             (error:any) =>{
               this.toastService.presentToast("System error occured!. Please contact system administrator");      
             }
           );
+
+          // console.log("DELIVERED2:", testResult.delivery.id, testResult.delivery.status);
+          // this.feedService.updateDelivery(testResult.delivery.id, testResult.delivery.status);
+
           obs.push(oneObs);
         }));
     }

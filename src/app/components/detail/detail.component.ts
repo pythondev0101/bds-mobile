@@ -95,19 +95,6 @@ export class DetailComponent implements OnInit {
         this.postData.accuracy = null;
       }
       
-      // const upload = (await this.photoService.upload(this.photoService.image.webviewPath,this.photoService.image.imageName,this.postData)).subscribe(
-      //   (res: any) => {
-      //     if(res.result){
-      //       this.feedService.updateDelivery(this.delivery.id, res.delivery.status);
-      //       this.toastService.presentToast('Delivered Successfully!');
-      //     }
-      //   },
-      //   (error:any) => {
-      //     this.feedService.updateDelivery(this.delivery.id, "IN-PROGRESS");
-      //     this.toastService.presentToast('Network Issue, please contact system administrator')
-      //   }
-      // );
-
       const upload = (await this.apiService.uploadAndDeliver(
         this.photoService.image.webviewPath, this.photoService.image.imageName, this.postData)).subscribe(
           (res: any) => {
