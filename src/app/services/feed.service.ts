@@ -49,9 +49,6 @@ export class FeedService {
   }
 
   updateDelivery(delivery_id: number, status: string){
-    console.log(JSON.stringify(this.deliveries));
-    console.log(delivery_id, status);
     this.deliveries.find(item => item.id == delivery_id).status = status;
-    console.log(JSON.stringify(this.deliveries));
   }
 }

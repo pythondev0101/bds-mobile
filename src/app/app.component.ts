@@ -8,6 +8,7 @@ import { Plugins, NetworkStatus, PluginListenerHandle } from '@capacitor/core';
 import { OfflineManagerService } from './services/offline-manager.service';
 import { NetworkService, ConnectionStatus } from './services/network.service';
 import { ToastService } from './services/toast.service';
+import { ChangeDetectorRef } from '@angular/core';
 
 const { Network } = Plugins;
 
@@ -24,6 +25,7 @@ export class AppComponent {
     private networkListenerService: NetworkListenerService,
     private offlineManager: OfflineManagerService,
     private networkService: NetworkService,
+    private changeRef: ChangeDetectorRef,
     // private events: Events,
     private toastService: ToastService
     // private cache: CacheService
@@ -45,15 +47,23 @@ export class AppComponent {
   
         if (status.connected == false){
         this.toastService.presentToast("Network disconnected!");
+        this.changeRef.detectChanges(); 
   
         } else {
           this.toastService.presentToast("Network connected!");
           this.networkService.onNetworkChange().subscribe((status: ConnectionStatus) => {
             if (status == ConnectionStatus.Online) {
-              this.offlineManager.checkForEvents().subscribe();
+              this.offlineManager.checkForEvents().subscribe(() =>{
+
+                setTimeout(() =>{
+                  this.changeRef.detectChanges();
+                },5000);
+
+              });
             }
         });
         }
+
         this.networkListenerService.networkStatus = status;
       });
   

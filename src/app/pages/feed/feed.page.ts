@@ -21,6 +21,7 @@ export class FeedPage implements OnInit {
     public modalCtrl: ModalController,
     private authService: AuthService,
     private networkListenerService: NetworkListenerService) {
+
   }
   
   ionViewWillEnter(){
