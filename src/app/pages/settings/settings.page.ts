@@ -92,7 +92,7 @@ export class SettingsPage implements OnInit {
 
     this.subscribers = this.subscribers.filter(subscriber => {
 
-        return (subscriber.fname.toLowerCase().indexOf(search_value.toLowerCase()) > -1);
+        return (subscriber.lname.toLowerCase().indexOf(search_value.toLowerCase()) > -1);
     });
   }
 

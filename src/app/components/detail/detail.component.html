@@ -39,7 +39,7 @@
       </ion-item>
   </ion-list>
 
-  <ion-img *ngIf="has_image; else no_image" [src]="photoService.image.webviewPath"></ion-img>
+  <ion-img *ngIf="has_image; else no_image" [src]="photoService.image?.webviewPath"></ion-img>
  
   <ng-template #no_image>
     <ion-row *ngIf="is_delivered == false">
@@ -62,7 +62,7 @@
         </ion-fab-button>
       </ion-col>
       <ion-col>
-        <ion-fab-button *ngIf="can_send" (click)="deliver()">
+        <ion-fab-button *ngIf="photoService.image" (click)="deliver()">
           <ion-icon name="send"></ion-icon>
         </ion-fab-button>
       </ion-col>

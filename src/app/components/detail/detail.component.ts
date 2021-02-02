@@ -43,7 +43,7 @@ export class DetailComponent implements OnInit {
   }
 
   
-  constructor(private photoService: PhotoService, private modalCtrl: ModalController, private toastService: ToastService, private httpService: HttpService,
+  constructor(public photoService: PhotoService, private modalCtrl: ModalController, private toastService: ToastService, private httpService: HttpService,
     private loadingController: LoadingController, public locationService: LocationService,
     private feedService: FeedService,
     private apiService: ApiService) {
@@ -69,9 +69,12 @@ export class DetailComponent implements OnInit {
     this.data.address = this.delivery.subscriber_address;
     this.data.email = this.delivery.subscriber_email;
     this.data.status = this.delivery.status;
-
     this.postData.subscriber_id = this.delivery.subscriber_id;
     
+    if (!(this.data.status == "IN-PROGRESS")){
+      this.is_delivered = true;
+    }
+
     this.loading.dismiss();
   }
 
@@ -80,8 +83,10 @@ export class DetailComponent implements OnInit {
     this.toastService.presentToast('Delivering, please wait...');
 
     try {
+      
       const date = new Date();
-      this.postData.date_mobile_delivery = date.toLocaleString();
+      this.postData.date_mobile_delivery = date.toLocaleString('en-US');
+
       this.postData.messenger_id = this.feedService.messenger_id;
       this.postData.delivery_id = this.delivery.id;
 
